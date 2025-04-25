@@ -1,6 +1,6 @@
-# Real-time Player Matching Server w. PubNub and EOS
+# Real-time Player Matching Server with PubNub and EOS
 
-An end-to-end matchmaking system built using **C++20**, **JavaScript**, **Crow**, **PubNub**, and **Epic Online Services (EOS)**. This hybrid architecture enables real-time, skill-based multiplayer matchmaking using persistent player profiles, adaptive decisioning, and secure session orchestration.
+An end-to-end matchmaking system built using **C++20**, **JavaScript**, **Crow**, [**PubNub**](https://www.pubnub.com/), and [**Epic Online Services (EOS)**](https://dev.epicgames.com/docs/dev-portal). This hybrid architecture enables real-time, skill-based multiplayer matchmaking using persistent player profiles, adaptive decisioning, and secure session orchestration.
 
 ---
 
@@ -17,15 +17,15 @@ The outcome: **fairer matches, lower churn, and higher retention** — all witho
 
 ## Key Features
 
-- Real-Time Player Metadata Syncing with PubNub App Context
+- Real-Time Player Metadata Syncing with [PubNub App Context](https://www.pubnub.com/docs/general/metadata/basics)
 Store and update structured player attributes such as ELO, latency, play style, input device, and toxicity. These profiles drive matchmaking logic and are continuously updated after each game.
-- Live Decision Analytics via PubNub Illuminate
+- Live Decision Analytics via [PubNub Illuminate](https://www.pubnub.com/products/illuminate/)
 Illuminate is used to stream real-time metrics after each match — including ELO gap, latency fairness, completion rate, and behavioral flags. These insights help evolve your matchmaking model without changing the server code.
 - Trusted Multiplayer Session Management with EOS SDK
 Matchmaking sessions are securely managed via Epic Online Services, with the full lifecycle handled server-side through a lightweight C++ API:
-  - POST /matchmaking: Initializes and creates a new session using EOS_Sessions_CreateSessionModification, with a custom bucket ID, player count, and session name.
-  - POST /session/start/:id: Starts the session via EOS_Sessions_StartSession, making it ready for gameplay once both users are confirmed.
-  - DELETE /session/:id: Cleans up resources using EOS_Sessions_DestroySession, ensuring no lingering sessions or stale metadata.
+  - POST /matchmaking: Initializes and creates a new session using [EOS_Sessions_CreateSessionModification](https://dev.epicgames.com/docs/en-US/api-ref/functions/eos-sessions-create-session-modification), with a custom bucket ID, player count, and session name.
+  - POST /session/start/:id: Starts the session via [EOS_Sessions_StartSession](https://dev.epicgames.com/docs/en-US/api-ref/functions/eos-sessions-start-session), making it ready for gameplay once both users are confirmed.
+  - DELETE /session/:id: Cleans up resources using [EOS_Sessions_DestroySession](https://dev.epicgames.com/docs/en-US/api-ref/functions/eos-sessions-destroy-session), ensuring no lingering sessions or stale metadata.
 The server also continuously ticks the EOS platform loop, using a platform-agnostic event loop (with native CoreFoundation support on macOS) to process real-time EOS events and callbacks.
 - Low-latency PubNub Messaging for Matchmaking Triggers
 Messages like "join_queue" and "match_found" are published instantly to PubNub channels, allowing clients to enter matchmaking, receive updates, and connect to game lobbies in real time.
@@ -171,7 +171,7 @@ Manage live player state like ELO, latency, region, input device, play style, an
   });
   ```
 
-Publish matchmaking triggers to signal that a player wants to join the matchmaking queue. This is done using the PubnubSubsystem in Unreal Engine, sending messages to the shared demo-matchmaking channel.
+Publish matchmaking triggers to signal that a player wants to join the matchmaking queue. This is done using the PubnubSubsystem in Unreal Engine, sending messages to the shared "demo-matchmaking" channel.
 
   Example:
   ```cpp
@@ -242,9 +242,9 @@ Stream match metrics to PubNub Illuminate to evaluate performance, fairness, and
 
 #### Sends HTTP requests to a local EOS API server (written in C++) to:
 
-- Create multiplayer sessions using the /matchmaking endpoint, which initializes EOS and creates a session via EOS_Sessions_CreateSessionModification.
-- Start a session using the /session/start/:id route, which begins the match lifecycle by calling EOS_Sessions_StartSession.
-- Destroy sessions via /session/:id, which uses EOS_Sessions_DestroySession to clean up resources.
+- Create multiplayer sessions using the /matchmaking endpoint, which initializes EOS and creates a session via [EOS_Sessions_CreateSessionModification](https://dev.epicgames.com/docs/en-US/api-ref/functions/eos-sessions-create-session-modification).
+- Start a session using the /session/start/:id route, which begins the match lifecycle by calling [EOS_Sessions_StartSession](https://dev.epicgames.com/docs/en-US/api-ref/functions/eos-sessions-start-session).
+- Destroy sessions via /session/:id, which uses [EOS_Sessions_DestroySession](https://dev.epicgames.com/docs/en-US/api-ref/functions/eos-sessions-destroy-session) to clean up resources.
 
 ### C++ (EOS Session Layer)
 
@@ -277,7 +277,7 @@ EOS_Sessions_DestroySession
 ```
 
 - Multithreaded Tick Loop:
-A dedicated thread runs the EOS event loop using either CFRunLoopRunInMode (macOS) or a standard while(true) loop (Linux/Windows), keeping the platform active and responsive to session changes.
+A dedicated thread runs the EOS event loop using either [CFRunLoopRunInMode](https://developer.apple.com/documentation/corefoundation/cfrunloopruninmode(_:_:_:)) (macOS) or a standard while(true) loop (Linux/Windows), keeping the platform active and responsive to session changes.
 
 
 
